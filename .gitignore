@@ -1,0 +1,7 @@
+#directories
+.vs/
+.gitignore.
+
+
+#files
+*.user
