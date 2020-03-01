@@ -36,6 +36,9 @@ const char* Window::WindowClass::GetName() noexcept
 	return m_wndClassName;
 }
 Window::Window(int width, int height, const char* name) 
+	:
+	m_width(width),
+	m_height(height)
 {
 	RECT wr;
 	wr.left = 100;
@@ -91,7 +94,14 @@ LRESULT CALLBACK Window::HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPAR
 	Window* const pWnd = reinterpret_cast<Window*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
 	return pWnd->HandleMsg(hWnd, msg, wParam, lParam);
 }
+void Window::SetTitle(const std::string& title)
+{
 
+	if (SetWindowText(m_hWND, title.c_str()) == 0)
+	{
+		throw WND_LAST_EXCEPT();
+	}
+}
 LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
 {
 	switch (msg)
@@ -101,6 +111,7 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 			PostQuitMessage(0);
 			return 0;
 		}break;
+		//****** START KEYBOARD MESSAGES ******//
 		case WM_KILLFOCUS:
 		{
 			m_kybrd.ClearState();
@@ -125,13 +136,69 @@ LRESULT Window::HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noe
 		{
 			m_kybrd.OnChar(static_cast<unsigned char>(wParam));
 		}break;
+		//****** END KEYBOARD MESSAGES ******//
 
+		//****** MOUSE MESSAGES ******//
+		case WM_MOUSEMOVE:
+		{
+			const POINTS pt = MAKEPOINTS(lParam);
+			// check to see if we are in client region
+			if (pt.x >= 0 && pt.x < m_width && pt.y >= 0 && pt.y < m_height)
+			{
+				m_mouse.OnMouseMove(pt.x, pt.y);
+				if (!m_mouse.IsInWindow())
+				{
+					SetCapture(m_hWND);
+					m_mouse.OnMouseEnter();
+				}
+			}
+			else
+			{
+				// we are not in client region, check to see is mouse left or right is beign pressed for checking drag events
+				if (m_mouse.LeftIsPressed() || m_mouse.RightIsPressed() )
+				{
+					m_mouse.OnMouseMove(pt.x, pt.y);
+				}
+				// we left the region
+				else
+				{
+					ReleaseCapture();
+					m_mouse.OnMouseLeave();
+				}
+			}
+		}break;
+		case WM_LBUTTONDOWN:
+		{
+			const POINTS pt = MAKEPOINTS(lParam);
+			m_mouse.OnLeftPressed(pt.x, pt.y);
+		}break;
+		case WM_RBUTTONDOWN:
+		{
+			const POINTS pt = MAKEPOINTS(lParam);
+			m_mouse.OnRightPressed(pt.x, pt.y);
+		}break;
+		case WM_LBUTTONUP:
+		{
+			const POINTS pt = MAKEPOINTS(lParam);
+			m_mouse.OnLeftReleased(pt.x, pt.y);
+		}break;
+		case WM_RBUTTONUP:
+		{
+			const POINTS pt = MAKEPOINTS(lParam);
+			m_mouse.OnRightReleased(pt.x, pt.y);
+		}break;
+		case WM_MOUSEWHEEL:
+		{
+			const POINTS pt = MAKEPOINTS(lParam);
+			const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
+			m_mouse.OnWheelDelta(pt.x, pt.y, delta);
+		}break;
 	}
 
 	return DefWindowProc(hWnd, msg, wParam, lParam);
 }
 
-// Windows exception handler
+// ************* Windows exception handler ************* //
 
 Window::Exception::Exception(int line, const char* file, HRESULT hr) noexcept
 	:
@@ -188,3 +255,5 @@ std::string Window::Exception::GetErrorString()const noexcept
 {
 	return TranslateErrorCode(m_hr);
 }
+
+

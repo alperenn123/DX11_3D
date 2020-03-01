@@ -1,5 +1,5 @@
 #include "Window.h"
-
+#include <sstream>
 INT CALLBACK WinMain
 (
    HINSTANCE hInstance, 
@@ -17,10 +17,6 @@ INT CALLBACK WinMain
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
-            if (wnd.m_kybrd.KeyIsPressed(VK_SPACE))
-            {
-                MessageBox(nullptr, "Something happened clearly definetely", "Space is clickeeed!!!", MB_OK | MB_ICONEXCLAMATION);
-            }
         }
 
         if (gResult == -1)
