@@ -3,6 +3,7 @@
 #include "WndExceptionHandler.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include <optional>
 class Window {
 public:
 	class Exception : public WndExceptionHandler
@@ -14,6 +15,7 @@ public:
 		static std::string TranslateErrorCode(HRESULT hr);
 		HRESULT GetErrorCode()const noexcept;
 		std::string GetErrorString()const noexcept;
+
 	private:
 		HRESULT m_hr;
 	};
@@ -40,6 +42,7 @@ public:
 	Window(const Window&) = delete;
 	Window& operator=(const Window&) = delete;
 	void SetTitle(const std::string& title);
+	static std::optional<int> ProcessMessages();
 private:
 	static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

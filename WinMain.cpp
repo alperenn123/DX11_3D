@@ -1,31 +1,16 @@
 #include "Window.h"
+#include "App.h"
 #include <sstream>
 INT CALLBACK WinMain
 (
-   HINSTANCE hInstance, 
-   HINSTANCE hPrevInstance,
-   LPSTR lpCmdLine, 
-   INT nCmdShow )
+	HINSTANCE hInstance,
+	HINSTANCE hPrevInstance,
+	LPSTR lpCmdLine,
+	INT nCmdShow)
 {
-    try {
-        Window wnd(800, 300, "D3D Window");
-
-        MSG msg;
-        BOOL gResult;
-
-        while ((gResult = GetMessage(&msg, nullptr, 0, 0)) > 0)
-        {
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
-
-        if (gResult == -1)
-        {
-            return -1;
-        }
-
-        return msg.wParam;
-    }
+	try {
+		return App{}.Go();
+	}
     catch (const WndExceptionHandler & e)
     {
         MessageBox(nullptr, e.what(), e.GetType(), MB_OK | MB_ICONEXCLAMATION);
