@@ -19,5 +19,7 @@ int App::Go()
 
 void App::DoFrame()
 {
-
+	const double c = sin(m_timer.Peek()) / 2.0f + 0.5f;
+	m_wnd.Gfx().ClearBuffer(c, c, 1.0f);
+	m_wnd.Gfx().EndFrame();
 }

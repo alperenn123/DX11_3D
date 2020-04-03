@@ -1,7 +1,2 @@
-﻿  App.cpp
-  Keyboard.cpp
-  Mouse.cpp
-  Window.cpp
-  WinMain.cpp
-  WndExceptionHandler.cpp
+﻿  Graphics.cpp
   Directx_tutorial.vcxproj -> C:\Users\alperen.salar\Desktop\DX11_3D\Debug\Directx_tutorial.exe

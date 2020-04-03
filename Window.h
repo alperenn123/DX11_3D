@@ -3,7 +3,9 @@
 #include "WndExceptionHandler.h"
 #include "Keyboard.h"
 #include "Mouse.h"
+#include "Graphics.h"
 #include <optional>
+#include <memory>
 class Window {
 public:
 	class Exception : public WndExceptionHandler
@@ -43,6 +45,7 @@ public:
 	Window& operator=(const Window&) = delete;
 	void SetTitle(const std::string& title);
 	static std::optional<int> ProcessMessages();
+	Graphics& Gfx();
 private:
 	static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 	static LRESULT CALLBACK HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -54,6 +57,7 @@ private:
 	int m_width;
 	int m_height;
 	HWND m_hWND;
+	std::unique_ptr<Graphics> m_pGfx;
 };
 
 // Macro for error expections
