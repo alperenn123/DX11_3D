@@ -1,8 +1,10 @@
 #include "Graphics.h"
+#include <cassert>
 
 
 Graphics::Graphics(HWND hWND)
 {
+	UINT m4xMsaaQuality;
 	DXGI_SWAP_CHAIN_DESC sd = {};
 	sd.BufferDesc.Width = 0;
 	sd.BufferDesc.Height = 0;
@@ -42,6 +44,8 @@ Graphics::Graphics(HWND hWND)
 		&m_pTarget
 	);
 	pBackBuffer->Release();
+	m_pDevice->CheckMultisampleQualityLevels(DXGI_FORMAT_R8G8B8A8_UNORM, 4, &m4xMsaaQuality);
+	assert(m4xMsaaQuality > 0);
 }
 
 Graphics::~Graphics()
